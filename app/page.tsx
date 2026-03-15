@@ -1,5 +1,6 @@
 import Counter from "@/learningreactbasics/Counter";
 import LoginForm from "@/learningreactbasics/LoginForm";
+import PostLists from "@/learningreactbasics/PostList";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
 
       <Counter />
       <LoginForm />
+      <PostLists />
     </main>
   );
 };
