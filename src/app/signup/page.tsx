@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function SignupPage() {
     const { signup } = useAuth();
-    const router = useRouter;
+    const router = useRouter();
     const [name, setName ] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
