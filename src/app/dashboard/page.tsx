@@ -32,8 +32,8 @@ function DashboardContent() {
   async function loadData() {
     if (!token) return;
     const [tracksData, entriesData] = await Promise.all([
-      apiFetch("/tracks", {}, token),
-      apiFetch("/entries", {}, token),
+      apiFetch("/tracks", {}, token as string),
+      apiFetch("/entries", {}, token as string),
     ]);
     setTracks(tracksData);
     setEntries(entriesData);
@@ -54,13 +54,13 @@ function DashboardContent() {
         method: "POST",
         body: JSON.stringify({ name: newTrackName, color: newTrackColor }),
       },
-      token!,
+      token as string,
     );
     setNewTrackName("");
     loadData();
   }
   async function handleDeleteTrack(id: string) {
-    await apiFetch("/tracks/" + id, { method: "DELETE" }, token!);
+    await apiFetch("/tracks/" + id, { method: "DELETE" }, token as string);
     loadData();
   }
   async function handleAddEntry(e: React.FormEvent) {
@@ -77,14 +77,14 @@ function DashboardContent() {
           date: entryDate,
         }),
       },
-      token!,
+      token as string,
     );
     setEntryTitle("");
     setEntryNotes("");
     loadData();
   }
   async function handleDeleteEntry(id: string) {
-    await apiFetch("/entries/" + id, { method: "DELETE" }, token!);
+    await apiFetch("/entries/" + id, { method: "DELETE" }, token as string);
     loadData();
   }
   function trackName(id: string) {
