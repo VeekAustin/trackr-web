@@ -14,13 +14,13 @@ export function useTracks() {
 
   const tracksQuery = useQuery<Track[]>({
     queryKey: ["tracks", token],
-    queryFn: () => apiFetch("/tracks", {}, token!),
+    queryFn: () => apiFetch("/tracks", {}, token as string),
     enabled: !!token,
   });
 
   const createTrack = useMutation({
     mutationFn: (data: { name: string; color: string }) =>
-      apiFetch("/tracks", { method: "POST", body: JSON.stringify(data) }, token!),
+      apiFetch("/tracks", { method: "POST", body: JSON.stringify(data) }, token as string),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tracks", token] });
     },
@@ -28,7 +28,7 @@ export function useTracks() {
 
   const deleteTrack = useMutation({
     mutationFn: (id: string) =>
-      apiFetch("/tracks/" + id, { method: "DELETE" }, token!),
+      apiFetch("/tracks/" + id, { method: "DELETE" }, token as string),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tracks", token] });
       queryClient.invalidateQueries({ queryKey: ["entries", token] }); // cascade deleted entries too

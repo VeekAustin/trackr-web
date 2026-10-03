@@ -16,13 +16,13 @@ export function useEntries() {
 
   const entriesQuery = useQuery<Entry[]>({
     queryKey: ["entries", token],
-    queryFn: () => apiFetch("/entries", {}, token!),
+    queryFn: () => apiFetch("/entries", {}, token as string),
     enabled: !!token,
   });
 
   const createEntry = useMutation({
     mutationFn: (data: { track: string; title: string; notes: string; date: string }) =>
-      apiFetch("/entries", { method: "POST", body: JSON.stringify(data) }, token!),
+      apiFetch("/entries", { method: "POST", body: JSON.stringify(data) }, token as string),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["entries", token] });
     },
@@ -30,7 +30,7 @@ export function useEntries() {
 
   const deleteEntry = useMutation({
     mutationFn: (id: string) =>
-      apiFetch("/entries/" + id, { method: "DELETE" }, token!),
+      apiFetch("/entries/" + id, { method: "DELETE" }, token as string),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["entries", token] });
     },
