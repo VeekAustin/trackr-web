@@ -6,14 +6,14 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}, toke
         ...(options.headers || {}),
     };
 
-    if (!token) {
-        (headers as Record<string, string>)["Authentication"]= 'Bearer ${token}';
+    if (token) {
+        (headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
     }
 
-    const res = await fetch('${API_URL}${endpoint}',{
-        ...options,
-        headers, 
-    });
+    const res = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers, 
+});
 
     const data = await res.json();
 
