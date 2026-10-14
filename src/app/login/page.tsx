@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { loginSchema, LoginFormData } from "@/lib/schemas";
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -30,10 +32,21 @@ export default function LoginPage() {
     }
   }
 
+  function SignupSuccessBanner() {
+    const params = useSearchParams();
+    if (params.get("signup") !== "success") return null;
+    return (
+      <p className="text-emerald-400 text-sm mb-4">
+        Account created. Log in to continue.
+      </p>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
       <form
         onSubmit={handleSubmit(onSubmit)}
+        noValidate
         className="bg-gray-900 border border-gray-800 rounded-lg p-8 w-full max-w-sm"
       >
         <h1 className="text-xl font-semibold text-white mb-6">Log in</h1>
@@ -53,6 +66,10 @@ export default function LoginPage() {
             <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
           )}
         </div>
+
+        <Suspense fallback={null}>
+          <SignupSuccessBanner />
+        </Suspense>
 
         <div className="mb-4">
           <input

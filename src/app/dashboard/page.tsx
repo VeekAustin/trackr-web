@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useTracks } from "@/hooks/useTracks";
 import { useEntries } from "@/hooks/useEntries";
+import TrackForm from "../components/TrackForm";
 import Spinner from "../components/ui/Spinner";
 import EmptyState from "../components/ui/EmptyState";
 import ErrorMessage from "../components/ui/ErrorMessage";
@@ -29,24 +30,12 @@ function DashboardContent() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [entries, setEntries] = useState<Entry[]>([]);
   
-  const [newTrackName, setNewTrackName] = useState("");
-  const [newTrackColor, setNewTrackColor] = useState("#4d9de0");
-
   const [entryTrack, setEntryTrack] = useState("");
   const [entryTitle, setEntryTitle] = useState("");
   const [entryNotes, setEntryNotes] = useState("");
   const [entryDate, setEntryDate] = useState(() =>
     new Date().toISOString().slice(0, 10),
   );
-
-  function handleAddTrack(e: React.FormEvent) {
-    e.preventDefault();
-    if (!newTrackName.trim()) return;
-    createTrack.mutate(
-      { name: newTrackName, color: newTrackColor },
-      { onSuccess: () => setNewTrackName("") }
-    );
-  }
 
   function handleAddEntry(e: React.FormEvent) {
     e.preventDefault();
@@ -116,28 +105,10 @@ function DashboardContent() {
             ))
           )}
         </div>
-        <form onSubmit={handleAddTrack} className="flex gap-2">
-          <input
-            type="text"
-            placeholder="New track name"
-            value={newTrackName}
-            onChange={(e) => setNewTrackName(e.target.value)}
-            className="bg-gray-900 border border-gray-800 rounded px-3 py-1.5 text-sm flex-1"
-          />
-          <input
-            type="color"
-            value={newTrackColor}
-            onChange={(e) => setNewTrackColor(e.target.value)}
-            className="w-10 h-9 bg-gray-900 border border-gray-800 rounded"
-          />
-          <button
-            type="submit"
-            disabled={createTrack.isPending}
-            className="bg-gray-800 px-4 rounded text-sm disabled:opacity-50"
-          >
-            {createTrack.isPending ? "Adding..." : "+ Add"}
-          </button>
-        </form>
+        <TrackForm
+          onSubmit={(name, color) => createTrack.mutate({ name, color })}
+          isPending={createTrack.isPending}
+        />
       </section>
       {/* New entry */}
       <section className="mb-8 bg-gray-900 border border-gray-800 rounded-lg p-4">

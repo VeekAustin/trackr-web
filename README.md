@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Trackr
 
-## Getting Started
+A personal progress log. Create your own categories — teaching, dev work, forex trading, a course, anything — and log what you did under them, with a title, optional notes, and a date. Unlike a to-do app, Trackr records what you've already done, building a history of effort over time rather than a plan for later.
 
-First, run the development server:
+Live site: `https://trackr-web-sigma.vercel.app`
+Backend repo: [trackr-api](https://github.com/VeekAustin/trackr-api)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Features
+
+- Sign up / log in, with your data kept private to your account
+- Create your own tracks (name + color)
+- Log dated entries against a track, including backfilling past days
+- Delete a track or entry (deleting a track removes its entries too)
+- Form validation with clear, field-level error messages
+- Loading, empty, and error states on every screen
+- Cached, auto-refetching data via React Query — no manual reload needed after an action
+
+## Tech stack
+
+| Layer | Choice |
+|---|---|
+| Framework | Next.js (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS v4 |
+| Server state | TanStack Query (React Query) |
+| Auth state | React Context |
+| Forms & validation | React Hook Form + Zod |
+| Testing | Vitest, React Testing Library |
+| Hosting | Vercel |
+
+## Project structure
+
+```
+src/
+  app/
+    dashboard/     # main authenticated view
+    login/         # login page
+    signup/        # signup page
+    components/    # UI components, ProtectedRoute, QueryProvider
+    error.tsx       # global error boundary
+  context/         # AuthContext
+  hooks/           # useTracks, useEntries (React Query)
+  lib/             # apiFetch client, Zod schemas
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Getting started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+git clone https://github.com/VeekAustin/trackr-web.git
+cd trackr-web
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env.local` file:
 
-## Learn More
+```
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+```
 
-To learn more about Next.js, take a look at the following resources:
+(Point this at a running [trackr-api](https://github.com/VeekAustin/trackr-api) instance — local or deployed.)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Run it:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run dev     # dev server at localhost:3000
+npm run build   # production build
+npm start       # run the production build
+npm test        # run the test suite
+```
 
-## Deploy on Vercel
+## Testing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm test
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Covers:
+- `LoginPage` — validation errors, successful login, server-error display
+- `TrackForm` — submission, empty-input handling, input clearing, pending state
+
+Auth and API calls are mocked in component tests, so the suite runs without a live backend.
+
+## Deployment
+
+Hosted on Vercel, auto-deploying from `main`. `NEXT_PUBLIC_API_URL` is set in Vercel's project settings and points at the deployed [trackr-api](https://github.com/VeekAustin/trackr-api) instance on Render.

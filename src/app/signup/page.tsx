@@ -3,14 +3,20 @@
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { signupSchema, SignupFormData } from "@/lib/schemas";
+import { apiFetch } from "@/lib/api";
+
 
 export default function SignupPage() {
-  const { signup } = useAuth();
   const router = useRouter();
   const [serverError, setServerError] = useState("");
+
+  useEffect(() => {
+  apiFetch('/health').catch(() =>{})
+  },[])
+
 
   const {
     register,
@@ -23,8 +29,11 @@ export default function SignupPage() {
   async function onSubmit(data: SignupFormData) {
     setServerError("");
     try {
-      await signup(data.name, data.email, data.password);
-      router.push("/dashboard");
+      await apiFetch("/auth/signup", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      router.push("/login?signup=success");
     } catch (err: any) {
       setServerError(err.message);
     }
@@ -34,6 +43,7 @@ export default function SignupPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
       <form
         onSubmit={handleSubmit(onSubmit)}
+        noValidate
         className="bg-gray-900 border border-gray-800 rounded-lg p-8 w-full max-w-sm"
       >
         <h1 className="text-xl font-semibold text-white mb-6">Create account</h1>
@@ -83,7 +93,7 @@ export default function SignupPage() {
           disabled={isSubmitting}
           className="w-full bg-emerald-600 text-white rounded py-2 font-medium disabled:opacity-50"
         >
-          {isSubmitting ? "Creating account..." : "Sign up"}
+          {isSubmitting ? "Creating account - this can take up to a minute..." : "Sign up"}
         </button>
 
         <p className="text-gray-400 text-sm mt-4">
