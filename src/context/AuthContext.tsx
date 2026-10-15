@@ -11,10 +11,9 @@ interface User{
 
 interface AuthContextType {
     user: User | null;
-    token: String | null;
-    loading: boolean;
+    token: string | null;
+    loading: boolean; 
     login: (email: string, password: string) => Promise<void>;
-    signup: (name: string, emaii: string, password: string) => Promise<void>;
     logout: () => void;
 }
 
@@ -49,14 +48,6 @@ export function AuthProvider ({children}: {children: ReactNode}) {
         });
         persist(data.token, data.user);
     }
-
-    async function signup (name: string, email: string, password: string){
-        const data = await apiFetch("/auth/signup", {
-            method: "POST",
-            body: JSON.stringify({name, email, password }),
-        });
-        persist(data.token, data.user);
-    }
      
     function logout () {
         localStorage.removeItem("token");
@@ -66,7 +57,7 @@ export function AuthProvider ({children}: {children: ReactNode}) {
     }
 
     return (
-        <AuthContext.Provider value={{user, token, loading, login, signup, logout}}>
+        <AuthContext.Provider value={{user, token, loading, login, logout}}>
             {children}
         </AuthContext.Provider>
     );

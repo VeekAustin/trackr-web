@@ -1,10 +1,5 @@
-import SignupPage from "./signup/page";
-import DashboardPage from "./dashboard/page";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-950 text-white">
-      <SignupPage />      
-    </main>
-  );
-};
+  redirect("/login");
+}

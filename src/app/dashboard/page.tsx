@@ -27,8 +27,8 @@ function DashboardContent() {
   const { tracksQuery, createTrack, deleteTrack } = useTracks();
   const { entriesQuery, createEntry, deleteEntry } = useEntries();
 
-  const [tracks, setTracks] = useState<Track[]>([]);
-  const [entries, setEntries] = useState<Entry[]>([]);
+  const tracks = tracksQuery.data ?? [];
+  const entries = entriesQuery.data ?? [];
   
   const [entryTrack, setEntryTrack] = useState("");
   const [entryTitle, setEntryTitle] = useState("");
@@ -74,7 +74,7 @@ function DashboardContent() {
   );
 }
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6 max-w-3xl mx-auto">
+    <div className="min-h-screen bg-gray-950 text-white p-6 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-xl font-semibold">progress.log</h1>
         <div className="flex items-center gap-4">
@@ -105,6 +105,12 @@ function DashboardContent() {
             ))
           )}
         </div>
+
+        {createTrack.isError && (
+          <p className="text-red-400 text-xs mt-2">
+            {(createTrack.error as Error).message}
+          </p>
+        )}
         <TrackForm
           onSubmit={(name, color) => createTrack.mutate({ name, color })}
           isPending={createTrack.isPending}
