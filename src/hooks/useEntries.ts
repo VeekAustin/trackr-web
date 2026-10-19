@@ -16,7 +16,10 @@ export function useEntries() {
 
   const entriesQuery = useQuery<Entry[]>({
     queryKey: ["entries", token],
-    queryFn: () => apiFetch("/entries", {}, token as string),
+    queryFn: async () => {
+      const res = await apiFetch("/entries", {}, token!);
+      return Array.isArray(res) ? res : (res.data ?? []);
+    },
     enabled: !!token,
   });
 
