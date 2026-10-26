@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { loginSchema, LoginFormData } from "@/lib/schemas";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -32,14 +33,23 @@ export default function LoginPage() {
     }
   }
 
-  function SignupSuccessBanner() {
+  function StatusBanner() {
     const params = useSearchParams();
-    if (params.get("signup") !== "success") return null;
-    return (
-      <p className="text-emerald-400 text-sm mb-4">
-        Account created. Log in to continue.
-      </p>
-    );
+    if (params.get("signup") === "success") {
+      return (
+        <p className="text-emerald-400 text-sm mb-4">
+          Account created. Log in to continue.
+        </p>
+      );
+    }
+    if (params.get("reset") === "success") {
+      return (
+        <p className="text-emerald-400 text-sm mb-4">
+          Password updated. Log in with your new password.
+        </p>
+      );
+    }
+    return null;
   }
 
   return (
@@ -68,7 +78,7 @@ export default function LoginPage() {
         </div>
 
         <Suspense fallback={null}>
-          <SignupSuccessBanner />
+          <StatusBanner />
         </Suspense>
 
         <div className="mb-4">
@@ -79,8 +89,19 @@ export default function LoginPage() {
             className="w-full bg-gray-800 text-white rounded px-3 py-2 outline-none"
           />
           {errors.password && (
-            <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>
+            <p className="text-red-400 text-xs mt-1">
+              {errors.password.message}
+            </p>
           )}
+        </div>
+
+        <div className="mt-2 text-right">
+          <Link
+            href="/forgot-password"
+            className="text-sm text-emerald-400 hover:underline"
+          >
+            Forgot password?
+          </Link>
         </div>
 
         <button
@@ -93,7 +114,9 @@ export default function LoginPage() {
 
         <p className="text-gray-400 text-sm mt-4">
           No account?{" "}
-          <a href="/signup" className="text-emerald-400">Sign up</a>
+          <a href="/signup" className="text-emerald-400">
+            Sign up
+          </a>
         </p>
       </form>
     </div>

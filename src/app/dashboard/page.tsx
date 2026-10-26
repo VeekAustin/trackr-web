@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useTracks } from "@/hooks/useTracks";
 import { useEntries } from "@/hooks/useEntries";
+import { TRACK_TEMPLATES } from "@/lib/templates";
 import TrackForm from "../components/TrackForm";
 import Spinner from "../components/ui/Spinner";
 import EmptyState from "../components/ui/EmptyState";
@@ -29,7 +30,7 @@ function DashboardContent() {
 
   const tracks = tracksQuery.data ?? [];
   const entries = entriesQuery.data ?? [];
-  
+
   const [entryTrack, setEntryTrack] = useState("");
   const [entryTitle, setEntryTitle] = useState("");
   const [entryNotes, setEntryNotes] = useState("");
@@ -37,13 +38,30 @@ function DashboardContent() {
     new Date().toISOString().slice(0, 10),
   );
 
+  const [applying, setApplying] = useState(false);
+
+  async function applyTemplate(templateId: string) {
+    const template = TRACK_TEMPLATES.find((t) => t.id === templateId);
+    if (!template) return;
+    setApplying(true);
+    await Promise.allSettled(
+      template.tracks.map((t) => createTrack.mutateAsync(t)),
+    );
+    setApplying(false);
+  }
+
   function handleAddEntry(e: React.FormEvent) {
     e.preventDefault();
     const track = entryTrack || tracks[0]?._id;
     if (!entryTitle.trim() || !track) return;
     createEntry.mutate(
       { track, title: entryTitle, notes: entryNotes, date: entryDate },
-      { onSuccess: () => { setEntryTitle(""); setEntryNotes(""); } }
+      {
+        onSuccess: () => {
+          setEntryTitle("");
+          setEntryNotes("");
+        },
+      },
     );
   }
 
@@ -61,22 +79,22 @@ function DashboardContent() {
     );
   }
   if (tracksQuery.isError || entriesQuery.isError) {
-  return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
-      <ErrorMessage
-        message="Couldn't load your data. Check your connection and try again."
-        onRetry={() => {
-          tracksQuery.refetch();
-          entriesQuery.refetch();
-        }}
-      />
-    </div>
-  );
-}
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
+        <ErrorMessage
+          message="Couldn't load your data. Check your connection and try again."
+          onRetry={() => {
+            tracksQuery.refetch();
+            entriesQuery.refetch();
+          }}
+        />
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-950 text-white p-6 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-xl font-semibold">progress.log</h1>
+        <h1 className="text-xl font-semibold">Trackr</h1>
         <div className="flex items-center gap-4">
           <span className="text-gray-400 text-sm">{user?.name}</span>
           <button onClick={logout} className="text-sm text-red-400">
@@ -89,7 +107,24 @@ function DashboardContent() {
         <h2 className="text-sm uppercase text-gray-500 mb-3">Tracks</h2>
         <div className="flex flex-wrap gap-2 mb-4">
           {tracks.length === 0 ? (
-            <EmptyState title="No tracks yet" hint="Add your first one below" />
+            <div className="w-full">
+              <EmptyState
+                title="No tracks yet"
+                hint="Add your first one below, or start from a template"
+              />
+              <div className="mt-3 flex flex-wrap gap-2">
+                {TRACK_TEMPLATES.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => applyTemplate(t.id)}
+                    disabled={applying}
+                    className="rounded border border-gray-700 px-3 py-1.5 text-sm hover:border-gray-500 disabled:opacity-50"
+                  >
+                    {t.name}
+                  </button>
+                ))}
+              </div>
+            </div>
           ) : (
             tracks.map((t) => (
               <span
@@ -98,7 +133,10 @@ function DashboardContent() {
                 style={{ backgroundColor: t.color + "22", color: t.color }}
               >
                 {t.name}
-                <button onClick={() => deleteTrack.mutate(t._id)} className="opacity-60">
+                <button
+                  onClick={() => deleteTrack.mutate(t._id)}
+                  className="opacity-60"
+                >
                   ×
                 </button>
               </span>
