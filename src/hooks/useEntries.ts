@@ -31,15 +31,25 @@ export function useEntries() {
   });
 
   const createEntry = useMutation({
-    mutationFn: (data: { track: string; title: string; notes: string; date: string }) =>
-      apiFetch("/entries", { method: "POST", body: JSON.stringify(data) }, token),
+    mutationFn: (data: {
+      track: string;
+      title: string;
+      notes: string;
+      date: string;
+    }) =>
+      apiFetch(
+        "/entries",
+        { method: "POST", body: JSON.stringify(data) },
+        token,
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["entries", userId] });
     },
   });
 
   const deleteEntry = useMutation({
-    mutationFn: (id: string) => apiFetch("/entries/" + id, { method: "DELETE" }, token),
+    mutationFn: (id: string) =>
+      apiFetch("/entries/" + id, { method: "DELETE" }, token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["entries", userId] });
     },
