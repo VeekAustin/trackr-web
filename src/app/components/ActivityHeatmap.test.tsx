@@ -35,6 +35,8 @@ describe("ActivityHeatmap", () => {
       { date: "2026-10-30", count: 2 },
       { date: "2026-10-29", count: 1 },
     ],
+    weeks: [],
+    months: [],
   };
 
   it("shows the stat tiles and one cell per day", () => {

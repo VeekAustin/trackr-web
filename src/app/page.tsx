@@ -129,14 +129,14 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-gray-800">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-6 text-sm text-gray-400">
-          <span>Built by Veek</span>
-          <a href="https://github.com/VeekAustin" className={`hover:text-white ${focusRing}`}>
-            GitHub
-          </a>
-        </div>
-      </footer>
+      // <footer className="border-t border-gray-800">
+      //  <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-6 text-sm text-gray-400">
+      //    <span>Built by Veek</span>
+      //    <a href="https://github.com/VeekAustin" className={`hover:text-white ${focusRing}`}>
+      //      GitHub
+      //    </a>
+      //  </div>
+      // </footer>
     </div>
   );
 }

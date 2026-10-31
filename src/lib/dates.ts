@@ -12,3 +12,26 @@ export function shiftDate(date: string, days: number): string {
   d.setUTCDate(d.getUTCDate() + days);
   return d.toISOString().slice(0, 10);
 }
+
+const monthFormat = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
+const dayFormat = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  timeZone: "UTC",
+});
+
+/** "2026-10" becomes "October 2026". */
+export function formatMonth(key: string): string {
+  return monthFormat.format(new Date(`${key}-01T00:00:00Z`));
+}
+
+/** A Monday as "Oct 19 – Oct 25". */
+export function formatWeek(start: string): string {
+  const from = dayFormat.format(new Date(`${start}T00:00:00Z`));
+  const to = dayFormat.format(new Date(`${shiftDate(start, 6)}T00:00:00Z`));
+  return `${from} – ${to}`;
+}

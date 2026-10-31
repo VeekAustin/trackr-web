@@ -13,6 +13,7 @@ import Spinner from "../components/ui/Spinner";
 import EmptyState from "../components/ui/EmptyState";
 import ErrorMessage from "../components/ui/ErrorMessage";
 import ProtectedRoute from "../components/ProtectedRoute";
+import PeriodBreakdown from "../components/PeriodBreakdown";
 
 interface Track {
   _id: string;
@@ -104,8 +105,20 @@ function DashboardContent() {
           </button>
         </div>
       </div>
-      {statsQuery.data && <ActivityHeatmap stats={statsQuery.data} today={today} />}
-
+      {statsQuery.isError && (
+        <p className="mb-4 text-sm text-red-400">
+          Couldn&apos;t load your activity stats:{" "}
+          {(statsQuery.error as Error).message}
+        </p>
+      )}
+      {statsQuery.data && (
+        <>
+          <ActivityHeatmap stats={statsQuery.data} today={today} />
+          {statsQuery.data.weeks && (
+            <PeriodBreakdown stats={statsQuery.data} tracks={tracks} />
+          )}
+        </>
+      )}
       {/* Tracks */}
       <section className="mb-8">
         <h2 className="text-sm uppercase text-gray-500 mb-3">Tracks</h2>
