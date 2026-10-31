@@ -20,15 +20,16 @@ export interface EntryStats {
 }
 
 export function useEntryStats() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const userId = user?.id;
   const today = localDateString();
 
-  // The key starts with ["entries", token], so creating or deleting an entry
+  // The key starts with ["entries", userId], so creating or deleting an entry
   // (which invalidates that prefix) also refreshes these stats.
   const statsQuery = useQuery<EntryStats>({
-    queryKey: ["entries", token, "stats", today],
-    queryFn: () => apiFetch(`/entries/stats?today=${today}`, {}, token as string),
-    enabled: !!token,
+    queryKey: ["entries", userId, "stats", today],
+    queryFn: () => apiFetch(`/entries/stats?today=${today}`, {}, token),
+    enabled: !!token && !!userId,
   });
 
   return { statsQuery, today };

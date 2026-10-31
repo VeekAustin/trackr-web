@@ -1,4 +1,5 @@
 # Trackr
+![Trackr dashboard](docs/dashboard.png)
 [![CI](https://github.com/VeekAustin/trackr-web/actions/workflows/ci.yml/badge.svg)](https://github.com/VeekAustin/trackr-web/actions/workflows/ci.yml)
 
 A personal progress log. Create your own categories (teaching, dev work, forex trading, a course, anything) and log what you did under them, with a title, optional notes, and a date. Unlike a to-do app, Trackr records what you've already done, building a history of effort over time rather than a plan for later.

@@ -1,37 +1,32 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-
-interface Track {
-  _id: string;
-  name: string;
-  color: string;
-}
+import type { Track } from "@/types/models";
 
 export function useTracks() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const userId = user?.id;
   const queryClient = useQueryClient();
 
   const tracksQuery = useQuery<Track[]>({
-    queryKey: ["tracks", token],
-    queryFn: () => apiFetch("/tracks", {}, token as string),
-    enabled: !!token,
+    queryKey: ["tracks", userId],
+    queryFn: () => apiFetch("/tracks", {}, token),
+    enabled: !!token && !!userId,
   });
 
   const createTrack = useMutation({
     mutationFn: (data: { name: string; color: string }) =>
-      apiFetch("/tracks", { method: "POST", body: JSON.stringify(data) }, token as string),
+      apiFetch("/tracks", { method: "POST", body: JSON.stringify(data) }, token),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tracks", token] });
+      queryClient.invalidateQueries({ queryKey: ["tracks", userId] });
     },
   });
 
   const deleteTrack = useMutation({
-    mutationFn: (id: string) =>
-      apiFetch("/tracks/" + id, { method: "DELETE" }, token as string),
+    mutationFn: (id: string) => apiFetch("/tracks/" + id, { method: "DELETE" }, token),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tracks", token] });
-      queryClient.invalidateQueries({ queryKey: ["entries", token] }); // cascade deleted entries too
+      queryClient.invalidateQueries({ queryKey: ["tracks", userId] });
+      queryClient.invalidateQueries({ queryKey: ["entries", userId] }); // entries and stats follow the cascade
     },
   });
 
