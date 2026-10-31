@@ -15,18 +15,6 @@ import ErrorMessage from "../components/ui/ErrorMessage";
 import ProtectedRoute from "../components/ProtectedRoute";
 import PeriodBreakdown from "../components/PeriodBreakdown";
 
-interface Track {
-  _id: string;
-  name: string;
-  color: string;
-}
-interface Entry {
-  _id: string;
-  track: string;
-  title: string;
-  notes: string;
-  date: string;
-}
 function DashboardContent() {
   const { user, logout } = useAuth();
   const { tracksQuery, createTrack, deleteTrack } = useTracks();

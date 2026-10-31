@@ -8,15 +8,13 @@ import { useAuth } from "@/context/AuthContext";
 import { signupSchema, SignupFormData } from "@/lib/schemas";
 import { apiFetch } from "@/lib/api";
 
-
 export default function SignupPage() {
   const router = useRouter();
   const [serverError, setServerError] = useState("");
 
   useEffect(() => {
-  apiFetch('/health').catch(() =>{})
-  },[])
-
+    apiFetch("/health").catch(() => {});
+  }, []);
 
   const {
     register,
@@ -34,8 +32,8 @@ export default function SignupPage() {
         body: JSON.stringify(data),
       });
       router.push("/login?signup=success");
-    } catch (err: any) {
-      setServerError(err.message);
+    } catch (err) {
+      setServerError(err instanceof Error ? err.message : "Something went wrong");
     }
   }
 
@@ -46,7 +44,9 @@ export default function SignupPage() {
         noValidate
         className="bg-gray-900 border border-gray-800 rounded-lg p-8 w-full max-w-sm"
       >
-        <h1 className="text-xl font-semibold text-white mb-6">Create account</h1>
+        <h1 className="text-xl font-semibold text-white mb-6">
+          Create account
+        </h1>
 
         {serverError && (
           <p className="text-red-400 text-sm mb-4">{serverError}</p>
@@ -84,7 +84,9 @@ export default function SignupPage() {
             className="w-full bg-gray-800 text-white rounded px-3 py-2 outline-none"
           />
           {errors.password && (
-            <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>
+            <p className="text-red-400 text-xs mt-1">
+              {errors.password.message}
+            </p>
           )}
         </div>
 
@@ -93,12 +95,16 @@ export default function SignupPage() {
           disabled={isSubmitting}
           className="w-full bg-emerald-600 text-white rounded py-2 font-medium disabled:opacity-50"
         >
-          {isSubmitting ? "Creating account - this can take up to a minute..." : "Sign up"}
+          {isSubmitting
+            ? "Creating account - this can take up to a minute..."
+            : "Sign up"}
         </button>
 
         <p className="text-gray-400 text-sm mt-4">
           Already have an account?{" "}
-          <a href="/login" className="text-emerald-400">Log in</a>
+          <a href="/login" className="text-emerald-400">
+            Log in
+          </a>
         </p>
       </form>
     </div>
