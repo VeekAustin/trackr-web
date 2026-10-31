@@ -5,6 +5,9 @@ import { useAuth } from "@/context/AuthContext";
 import { useTracks } from "@/hooks/useTracks";
 import { useEntries } from "@/hooks/useEntries";
 import { TRACK_TEMPLATES } from "@/lib/templates";
+import { useEntryStats } from "@/hooks/useEntryStats";
+import { localDateString } from "@/lib/dates";
+import ActivityHeatmap from "../components/ActivityHeatmap";
 import TrackForm from "../components/TrackForm";
 import Spinner from "../components/ui/Spinner";
 import EmptyState from "../components/ui/EmptyState";
@@ -27,6 +30,7 @@ function DashboardContent() {
   const { user, logout } = useAuth();
   const { tracksQuery, createTrack, deleteTrack } = useTracks();
   const { entriesQuery, createEntry, deleteEntry } = useEntries();
+  const { statsQuery, today } = useEntryStats();
 
   const tracks = tracksQuery.data ?? [];
   const entries = entriesQuery.data ?? [];
@@ -34,9 +38,7 @@ function DashboardContent() {
   const [entryTrack, setEntryTrack] = useState("");
   const [entryTitle, setEntryTitle] = useState("");
   const [entryNotes, setEntryNotes] = useState("");
-  const [entryDate, setEntryDate] = useState(() =>
-    new Date().toISOString().slice(0, 10),
-  );
+  const [entryDate, setEntryDate] = useState(() => localDateString());
 
   const [applying, setApplying] = useState(false);
 
@@ -78,7 +80,7 @@ function DashboardContent() {
       </div>
     );
   }
-  if (tracksQuery.isError || entriesQuery.isError) {
+  if (tracksQuery.isError || (entriesQuery.isError && !entriesQuery.data)) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
         <ErrorMessage
@@ -102,6 +104,8 @@ function DashboardContent() {
           </button>
         </div>
       </div>
+      {statsQuery.data && <ActivityHeatmap stats={statsQuery.data} today={today} />}
+
       {/* Tracks */}
       <section className="mb-8">
         <h2 className="text-sm uppercase text-gray-500 mb-3">Tracks</h2>
@@ -248,6 +252,20 @@ function DashboardContent() {
             ))
           )}
         </div>
+        {entriesQuery.hasNextPage && (
+          <button
+            onClick={() => entriesQuery.fetchNextPage()}
+            disabled={entriesQuery.isFetchingNextPage}
+            className="mt-3 w-full rounded border border-gray-700 py-2 text-sm text-gray-200 hover:border-gray-500 disabled:opacity-50"
+          >
+            {entriesQuery.isFetchingNextPage ? "Loading..." : "Load more"}
+          </button>
+        )}
+        {entriesQuery.isError && entriesQuery.data && (
+          <p className="mt-2 text-xs text-red-400">
+            Couldn&apos;t load more entries. Try again.
+          </p>
+        )}
       </section>
     </div>
   );

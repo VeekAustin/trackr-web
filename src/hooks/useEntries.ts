@@ -1,8 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient,} from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 
-interface Entry {
+export interface Entry {
   _id: string;
   track: string;
   title: string;
@@ -10,22 +10,35 @@ interface Entry {
   date: string;
 }
 
+interface EntriesPage {
+  data: Entry[];
+  nextCursor: string | null;
+}
+
 export function useEntries() {
   const { token } = useAuth();
   const queryClient = useQueryClient();
 
-  const entriesQuery = useQuery<Entry[]>({
+  const entriesQuery = useInfiniteQuery({
     queryKey: ["entries", token],
-    queryFn: async () => {
-      const res = await apiFetch("/entries", {}, token!);
-      return Array.isArray(res) ? res : (res.data ?? []);
+    queryFn: ({ pageParam }): Promise<EntriesPage> => {
+      const qs = pageParam ? `?cursor=${encodeURIComponent(pageParam)}` : "";
+      return apiFetch(`/entries${qs}`, {}, token as string);
     },
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    // Keeps the old shape: entriesQuery.data is a flat Entry[]
+    select: (result) => result.pages.flatMap((page) => page.data),
     enabled: !!token,
   });
 
   const createEntry = useMutation({
-    mutationFn: (data: { track: string; title: string; notes: string; date: string }) =>
-      apiFetch("/entries", { method: "POST", body: JSON.stringify(data) }, token as string),
+    mutationFn: (data: {track: string; title: string; notes: string; date: string;}) =>
+      apiFetch(
+        "/entries",
+        { method: "POST", body: JSON.stringify(data) },
+        token as string,
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["entries", token] });
     },
